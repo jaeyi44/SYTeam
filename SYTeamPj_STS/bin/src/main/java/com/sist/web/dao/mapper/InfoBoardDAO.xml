@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.InfoBoardDAO">
+	<select id="infoSeqCount" resultType="Integer">
+		SELECT COUNT(ISEQ) FROM INFO WHERE ${param1} LIKE '%${param2}%'
+	</select>
+	
+	<select id="getInfos" resultType="com.sist.web.vo.InfoBoard"> 
+		SELECT * FROM (SELECT ROWNUM AS RN, I.* FROM (SELECT * FROM INFO WHERE ${param2} LIKE '%${param3}%' ORDER BY TO_NUMBER(ISEQ) DESC)I) WHERE RN BETWEEN (1+(#{param1}-1)*5) AND (1+(#{param1}-1)*5)+4
+	</select>	
+	
+	<select id="getInfo" resultType="com.sist.web.vo.InfoBoard"> 
+		SELECT * FROM INFO WHERE ISEQ=#{iseq}
+	</select>
+	
+	<update id="editInfo">
+		UPDATE INFO SET TITLE=#{param3},CONTENT=#{param2} WHERE ISEQ=#{param1}
+	</update>
+	
+	<delete id="delInfo">
+		DELETE INFO WHERE ISEQ=#{seq}
+	</delete>
+	
+	<delete id="delComment">
+		DELETE COMMENTS WHERE CSEQ=#{cseq}
+	</delete>
+	
+	<insert id="addComment">
+		<selectKey keyProperty="cseq" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (CSEQ)),0)+1 FROM COMMENTS
+		</selectKey>
+		INSERT INTO COMMENTS VALUES(#{cseq},#{param1},#{param2},SYSDATE,1,#{param3})
+	</insert>
+	
+	<select id="getComments" resultType="com.sist.web.vo.Comments">
+		SELECT * FROM COMMENTS INNER JOIN INFO ON CISEQ = ISEQ WHERE ISEQ=#{iseq} ORDER BY TO_NUMBER(CSEQ) DESC
+	</select>
+	
+	<insert id="addInfo">
+		<selectKey keyProperty="iseq" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (ISEQ)),0)+1 FROM INFO
+		</selectKey>
+		INSERT INTO INFO VALUES(#{iseq},#{title},#{content},0,DEFAULT,SYSDATE,#{filesrc, jdbcType=VARCHAR},#{kind},0)
+	</insert>
+	
+	<update id="hitUp">
+		UPDATE INFO SET HIT=HIT+1 WHERE ISEQ=#{iseq}
+	</update>
+	 
+	<update id="voteUp">
+		UPDATE INFO SET VOTE=vote+1 WHERE ISEQ=#{iseq}
+	</update>
+	
+	<update id="commentUp">
+		UPDATE INFO SET COMMENTCNT=commentcnt+1 WHERE ISEQ=#{iseq}
+	</update>
+	
+	<update id="commentDown">
+		UPDATE INFO SET COMMENTCNT=commentcnt-1 WHERE ISEQ=#{iseq}
+	</update>
+
+</mapper>

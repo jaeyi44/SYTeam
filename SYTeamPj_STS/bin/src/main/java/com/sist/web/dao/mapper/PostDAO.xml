@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.PostDAO">
+
+ 	<insert id="addPost">
+		<selectKey keyProperty="pseq" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (FSEQ)),0)+1 FROM POSTS
+		</selectKey>
+		INSERT INTO POSTS VALUES(#{pseq},#{title},#{content},DEFAULT,#{filesrc})
+	</insert>
+	
+	<update id="editPost">
+		UPDATE POSTS SET CONTENT=#{content}, REGDATE=SYSDATE, FILESRC=#{filesrc}
+	</update>
+	
+	<delete id="delPost">
+		DELETE POSTS WHERE FSEQ=#{pseq}
+	</delete>
+	
+	<select id="getPost" resultType="com.sist.web.vo.Post">
+		SELECT * FROM POSTS WHERE FSEQ=#{pseq}
+	</select>
+	
+	<select id="getPosts" resultType="com.sist.web.vo.Post">
+		SELECT * FROM POSTS WHERE GID=#{gid} ORDER BY REGDATE DESC
+	</select>
+
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.PostDAO">
+
+ 	<insert id="addPost">
+		<selectKey keyProperty="pseq" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (PSEQ)),0)+1 FROM POSTS
+		</selectKey>
+		INSERT INTO POSTS VALUES(#{pseq}, #{gid}, #{content},DEFAULT, #{filesrc, jdbcType=VARCHAR},#{nickname}, DEFAULT, DEFAULT)
+	</insert>
+	
+	<update id="editPost">
+		UPDATE POSTS SET CONTENT=#{content}, REGDATE=SYSDATE, FILESRC=#{filesrc}
+	</update>
+	
+	<delete id="delPost">
+		DELETE POSTS WHERE FSEQ=#{pseq}
+	</delete>
+	
+	<select id="getPost" resultType="com.sist.web.vo.Post">
+		SELECT * FROM POSTS WHERE FSEQ=#{pseq}
+	</select>
+	
+	<select id="getPosts" resultType="com.sist.web.vo.Post">
+		SELECT DISTINCT P.PSEQ,P.GID,P.CONTENT,P.REGDATE,P.FILESRC,P.NICKNAME,P.LIKEIT,M.PROFILEPIC,P.COMNUM FROM POSTS P LEFT JOIN MEMBER M ON P.NICKNAME=M.NICKNAME WHERE P.GID=#{gid} ORDER BY REGDATE DESC
+	</select>
+	
+	<select id="getMyPosts" resultType="com.sist.web.vo.Post">
+		SELECT DISTINCT P.PSEQ,P.GID,P.CONTENT,P.REGDATE,P.FILESRC,P.NICKNAME,P.LIKEIT,M.PROFILEPIC FROM POSTS P LEFT JOIN MEMBER M ON P.NICKNAME=M.NICKNAME WHERE P.NICKNAME=#{nickname} ORDER BY REGDATE DESC
+	</select>
+	
+	<update id="likeUp">
+		UPDATE POSTS SET LIKEIT=LIKEIT+1 WHERE PSEQ=#{pseq}
+	</update>
+	
+	<insert id="addComment">
+	<selectKey keyProperty="pcSeq" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (PCSEQ)),0)+1 FROM PCOMMENTS
+	</selectKey>
+		INSERT INTO PCOMMENTS VALUES(#{pcSeq},#{pseq},SYSDATE,#{pcWriter},#{pcContent})
+	</insert>
+	
+	<delete id="delComment">
+		DELETE PCOMMENTS WHERE PCSEQ=#{pcSeq}
+	</delete>
+	
+	<select id="getComments" resultType="com.sist.web.vo.Pcomments">
+		SELECT * FROM PCOMMENTS WHERE PCPSEQ=#{pseq} ORDER BY PCREGDATE DESC
+	</select>
+	
+	<select id="comNum" resultType="Integer">
+		SELECT COUNT(PCSEQ) FROM PCOMMENTS WHERE PCPSEQ=#{pseq}
+	</select>
+	
+	<select id="getRank" resultType="String">
+		SELECT GID FROM POSTS GROUP BY GID ORDER BY TO_NUMBER(COUNT(GID)) DESC
+	</select>
+	
+	<update id="comUp">
+		UPDATE POSTS SET COMNUM=COMNUM+1 WHERE PSEQ=#{pseq};
+	</update>
+	
+</mapper>

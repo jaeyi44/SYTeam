@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.ChalgroupDAO">
+
+	<select id="getGroups" resultType="com.sist.web.vo.Chalgroup">
+		SELECT * FROM CHALGROUP ORDER BY TO_NUMBER(GID) DESC
+	</select>
+	<select id="getGroupByGid" resultType="com.sist.web.vo.Chalgroup">
+		SELECT * FROM CHALGROUP WHERE GID=#{gid}
+	</select>
+	<select id="getGroupByAdmin" resultType="com.sist.web.vo.Chalgroup">
+		SELECT * FROM CHALGROUP WHERE ADMIN=#{mid}
+	</select>
+	<select id="getGroupsByKind" resultType="com.sist.web.vo.Chalgroup">
+		SELECT * FROM CHALGROUP WHERE KIND=#{kind}
+	</select>
+	<insert id="addGroup">
+		INSERT INTO CHALGROUP VALUES(#{gid},#{title},#{content},#{kind},#{likeit},#{filesrc},#{startd},#{endd})
+	</insert>
+	<delete id="delGroup">
+		DELETE CHALGROUP WHERE GID=#{gid}
+	</delete>
+	<update id="likeUp" >
+		UPDATE CHALGROUP SET LIKEIT = LIKEIT+1 WHERE GID=#{gid}
+	</update>
+	
+</mapper>

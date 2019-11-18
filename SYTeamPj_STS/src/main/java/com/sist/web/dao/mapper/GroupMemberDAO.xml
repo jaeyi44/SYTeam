@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.GroupMemberDAO">
+	<insert id="addGroupMem">
+		INSERT INTO GROUPMEM VALUES(#{param1},#{param2},#{param3})
+	</insert>
+	<select id="viewMygroup" resultType="String">
+		SELECT GID FROM GROUPMEM WHERE MEMID=#{mid}
+	</select>
+	<select id="searchMem" resultType="String">
+		SELECT MEMID FROM GROUPMEM WHERE GID=#{gid}
+	</select>	
+	<select id="countMem" resultType="Integer">
+		SELECT COUNT(MEMID) FROM GROUPMEM WHERE GID=#{gid}
+	</select>
+	<select id="getGroupMems" resultType="com.sist.web.vo.GroupMember">
+		SELECT * FROM GROUPMEM
+	</select>
+
+
+
+
+
+
+
+
+
+</mapper>

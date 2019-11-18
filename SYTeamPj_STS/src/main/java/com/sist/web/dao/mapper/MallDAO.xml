@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.MallDAO">
+	
+	
+	<select id="getItems" resultType="com.sist.web.vo.Items">
+      SELECT * FROM (SELECT ROWNUM AS RN, I.* FROM (SELECT * FROM ITEMS WHERE ${param2} LIKE '%${param3}%' ORDER BY TO_NUMBER(ITEMNO) DESC) I) WHERE RN BETWEEN (1+(#{param1}-1)*9) AND (1+(#{param1}-1)*9)+8
+    </select>
+	
+	<select id="getNewItems" resultType="com.sist.web.vo.Items">
+		SELECT * FROM (SELECT ROWNUM AS RN, I.* FROM (SELECT * FROM ITEMS WHERE ${param2} LIKE '%${param3}%' ORDER BY TO_NUMBER(ITEMNO) DESC)I) WHERE RN BETWEEN (1+(#{param1}-1)*5) AND (1+(#{param1}-1)*5)+5
+	</select>
+	
+	<select id="getMainItems" resultType="com.sist.web.vo.Items">
+      SELECT * FROM (SELECT ROWNUM AS RN, I.* FROM (SELECT * FROM ITEMS WHERE ${param2} LIKE '%${param3}%' ORDER BY TO_NUMBER(ITEMNO) DESC) I) WHERE RN BETWEEN (1+(#{param1}-1)*3) AND (1+(#{param1}-1)*3)+2
+    </select>
+	
+	<select id="itemNoCount" resultType="Integer">
+		SELECT COUNT(itemNo) FROM Items where ${param1} LIKE '%${param2}%'
+	</select>
+	
+	<insert id="itemUpload">
+		<selectKey keyProperty="itemNo" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (itemNo)),0)+1 FROM Items
+		</selectKey>
+		INSERT INTO ITEMS VALUES(#{itemNo},#{itemName},#{itemPrice},#{itemType},#{itemUse},#{itemImg, jdbcType=VARCHAR},#{itemDesc},sysdate,#{itemStock})
+	</insert>
+	
+	<delete id="itemDel">
+		Delete items where itemNo = #{itemNo}
+	</delete>
+	
+	<select id="itemDetail" resultType="com.sist.web.vo.Items">
+		select * from items where itemNo=#{itemNo}
+	</select>
+	
+	<insert id="itemPurchase">
+		<selectKey keyProperty="orderNo" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (orderNo)),0)+1 FROM orderlist
+		</selectKey>
+		insert into orderList values(#{param1},#{orderNo},SYSDATE,#{param3},'order placed',#{param4},#{param2},#{param5},#{param6},#{param7})
+	</insert>
+
+	<update id="StockDown">
+		<selectKey keyProperty="OrgStock" resultType="String" order="BEFORE">
+		select to_number(itemStock) from items where itemNo= #{param1}
+		</selectKey>
+		update items set itemStock = (#{OrgStock}-to_number(#{param2})) where itemNo = #{param1}
+	</update>
+	
+	<select id="itemsFromCart" resultType="com.sist.web.vo.MyCart">
+		select * from myCart where itemNo=#{param1} and cartname=#{param2}
+	</select>
+	
+	<select id="viewCart" resultType="com.sist.web.vo.MyCart">
+		SELECT * FROM MYCART where cartName=#{mid}
+	</select>
+	
+	<select id="adminOrderList" resultType="com.sist.web.vo.OrderList">
+		select * from orderlist inner join member on mid = orderlistname order by orderdate desc
+	</select>
+	
+	<insert id="addCart">
+	<selectKey keyProperty="cartNo" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (cartNo)),0)+1 FROM mycart
+	</selectKey>
+		insert into myCart values(#{param2},#{param3},#{param1.itemName},#{param1.itemPrice},#{param4},#{cartNo})
+	</insert>
+	
+	<update id="addMoretoCart">
+		update myCart set quantity = (quantity + #{param3}) where itemNo = #{param2} and cartName=#{param1}
+	</update>
+	
+	<delete id="delCart">
+		delete myCart where itemNo = #{itemNo}	
+	</delete>
+	
+	<update id="superDel">
+		alter table review disable CONSTRAINT fk_itemNo 
+	</update>
+	
+	<update id="superDel2">
+		alter table orderList disable CONSTRAINT fokey_itemNo 
+	</update>
+	
+	<insert id="addReview">
+		<selectKey keyProperty="reviewNo" resultType="String" order="BEFORE">
+		SELECT NVL(MAX (TO_NUMBER (reviewNo)),0)+1 FROM review
+		</selectKey>
+		insert into review values(#{param2},#{reviewNo},#{param3.star},#{param3.content},#{param1},#{param3.itemName},sysdate)
+	</insert>
+
+	<select id="getReviews" resultType="com.sist.web.vo.Review">
+		select * from review where itemNo = #{itemNo} order by regdate desc
+	</select>
+	
+	<delete id="DelReview">
+		Delete review where reviewNo = #{reviewNo}
+	</delete>
+	
+	<select id="getMyOrders" resultType="com.sist.web.vo.OrderList">
+<!-- 		SELECT * FROM OrderList where orderlistname=#{mid} order by orderdate desc -->
+<!-- 		select * from orderlist o inner join items i on o.itemno = i.itemno where o.itemno ='37' -->
+		select * from orderlist o inner join items i on o.itemno = i.itemno where orderlistname =#{mid}
+	</select>
+
+	<select id="searchItems" resultType="com.sist.web.vo.Items">
+    	SELECT * FROM ITEMS WHERE ITEMTYPE LIKE '%${param1}%' AND ITEMUSE LIKE '%${param2}%' ORDER BY TO_NUMBER(${param3}) ${param4}
+    </select>
+
+</mapper>

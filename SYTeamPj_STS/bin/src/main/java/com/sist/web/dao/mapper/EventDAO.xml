@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.EventDAO">
+	<select id="getDates" resultType="com.sist.web.vo.Event">
+		SELECT * FROM EVENTS
+	</select>
+	<insert id="addEvent">
+		INSERT INTO EVENTS VALUES(#{seq},#{title},#{edate},#{url})
+	</insert>
+	<delete id="delEvent">
+		DELETE EVENTS WHERE SEQ=#{seq}
+	</delete>
+	
+</mapper>

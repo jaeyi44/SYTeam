@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+        
+   <context:component-scan base-package="com.sist.web.controller"></context:component-scan>
+   
+        
+   <bean name="ds" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+      <property name="url" value="jdbc:oracle:thin:@211.238.142.129:1521:orcl"></property>
+      <property name="username" value="TT"></property>
+      <property name="password" value="123"></property>
+   </bean>
+   
+   <bean name = "sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="ds"></property>
+      <property name="mapperLocations" value="classpath:com/sist/web/dao/mapper/*.xml"></property>
+   </bean>
+   
+   <bean name = "sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+      <constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+   </bean>
+
+   <bean name="MallDAO" class="com.sist.web.dao.MallDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+
+    <bean name="EventDAO" class="com.sist.web.dao.EventDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="MemberDAO" class="com.sist.web.dao.MemberDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="ChalgroupDAO" class="com.sist.web.dao.ChalgroupDAOService">
+       <property name="sqlsession" ref="sqlSession"></property>
+    </bean> 
+
+   <bean name="PostDAO" class="com.sist.web.dao.PostDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="InfoBoardDAO" class="com.sist.web.dao.InfoBoardDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="QnABoardDAO" class="com.sist.web.dao.QnABoardDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="WorkoutDAO" class="com.sist.web.dao.WorkoutDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="MyRouteDAO" class="com.sist.web.dao.MyRouteDAOService">
+       <property name="sqlSession" ref="sqlSession"></property>
+    </bean>
+    
+    <bean name="GroupMemberDAO" class="com.sist.web.dao.GroupMemberDAOService">
+       <property name="sqlsession" ref="sqlSession"></property>
+    </bean>
+    
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/plain;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+    
+</beans>

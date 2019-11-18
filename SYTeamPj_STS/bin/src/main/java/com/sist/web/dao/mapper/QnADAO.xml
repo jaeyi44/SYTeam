@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.sist.web.dao.QnABoardDAO">
+ 	<select id="getQnABoard" resultType="com.sist.web.vo.QnABoard">
+		SELECT * FROM QNA WHERE QSEQ=#{qSeq}
+	</select>
+	
+	<select id="getQnABoards" resultType="com.sist.web.vo.QnABoard">
+		SELECT * FROM QNA Q INNER JOIN MEMBER M ON Q.WRITER = M.MID WHERE Q.WRITER=M.MID ORDER BY TO_NUMBER(QSEQ) DESC
+	</select>
+	
+	<insert id="addQnABoard">
+		<selectKey keyProperty="qSeq" resultType="String" order="BEFORE">
+			SELECT NVL(MAX(TO_NUMBER(QSEQ)),0)+1 FROM QNA
+		</selectKey>
+		INSERT INTO QNA
+		VALUES(${qSeq},#{title},#{content},DEFAULT,#{fileSrc, jdbcType=VARCHAR},#{writer},DEFAULT)
+	</insert>
+	
+	<update id="editQnABoard">
+		UPDATE QNA SET TITLE=#{title}, CONTENT=#{content}, FILESRC=#{fileSrc, jdbcType=VARCHAR}, REGDATE=DEFAULT WHERE QSEQ=#{qSeq}
+	</update>
+	
+	<delete id="delQnABoard" >
+	   DELETE QNA WHERE QSEQ=#{qSeq} <!--인자가 하나일 때에는 인자 이름 그대로 써줌-->
+	</delete>
+	
+ 	<select id="qnASeqCount" resultType="Integer">
+		SELECT COUNT(QSEQ) CNT FROM QNA WHERE ${param1} LIKE '%${param2}%'
+	</select>
+	
+	<select id="getQnAComment" resultType="com.sist.web.vo.Qcomment">
+		SELECT * FROM QCOMMENT WHERE QSEQ=#{qSeq}
+	</select>
+	
+	<select id="getQnAComments" resultType="com.sist.web.vo.Qcomment">
+		SELECT * FROM
+		(SELECT ROWNUM AS RN, M.* FROM (SELECT * FROM QNA INNER JOIN QCOMMENT ON QNA.QSEQ=QCOMMENT.QSEQ WHERE ${param2} LIKE '%${param3}%'
+		ORDER BY TO_NUMBER(QNA.QSEQ) DESC) M) WHERE RN BETWEEN (1+(#{param1}-1)*5) AND (1+(#{param1}-1)*10)+4
+	</select>
+	
+	<delete id="delQnAComment" >
+	   DELETE QCOMMENT WHERE CSEQ=#{cSeq}
+	</delete>
+	
+	<update id="addReply">
+		INSERT INTO QCOMMENT(CSEQ, QSEQ, CWRITER,CREGDATE,CCONTENT) VALUES(CSEQ.NEXTVAL,#{param1}, '관리자',SYSDATE,#{param2})
+	</update>
+	
+	<update id="changeStatus">
+		UPDATE QNA SET STATUS='답변완료' WHERE QSEQ=#{qSeq}
+	</update>
+	
+</mapper>
+
+
+

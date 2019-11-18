@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="com.sist.web.dao.WorkoutDAO">
+ 	<select id="getWorkoutsById" resultType="com.sist.web.vo.Workout">
+		SELECT * FROM WORKOUT WHERE MID=#{mid}
+	</select>
+	
+	<select id="getWorkout" resultType="com.sist.web.vo.Workout">
+		SELECT * FROM WORKOUT WHERE WSEQ=#{wseq}
+	</select>
+	
+	<insert id="addWorkout">
+		<selectKey keyProperty="wseq" resultType="String" order="BEFORE">
+			SELECT NVL(MAX(TO_NUMBER(WSEQ)),0)+1 FROM WORKOUT
+		</selectKey>
+		INSERT INTO WORKOUT(WSEQ,MID,KIND,HOUR,MINUTE,DIST,REGDATE)
+		VALUES(#{wseq},#{mid},#{kind},#{hour},#{minute},#{dist},#{regdate})
+	</insert>
+	
+	<update id="editWorkout">
+		UPDATE WORKOUT SET KIND=#{param1.kind}, HOUR=#{param1.hour}, MINUTE=#{param1.minute}, DIST=#{param1.dist}, REGDATE=#{param1.regdate} WHERE WSEQ=#{param2}
+	</update>
+	
+	<delete id="delWorkout" >
+	    DELETE WORKOUT WHERE WSEQ=#{wseq} <!--인자가 하나일 때에는 인자 이름 그대로 써줌-->
+	</delete>
+	
+	<select id="getWcntByKind" resultType="com.sist.web.vo.WorkoutCnt">
+		SELECT KIND as NAME, COUNT(WSEQ) as Y FROM WORKOUT WHERE MID=#{mid} GROUP BY KIND
+	</select>
+	
+ 	<select id="getWcntByMth" resultType="com.sist.web.vo.WcntByMonth">
+		SELECT TO_CHAR(REGDATE,'MON') AS MONTH, COUNT(WSEQ) AS NUM FROM WORKOUT
+		WHERE MID=#{param1} AND REGDATE BETWEEN #{param3} AND #{param4} AND KIND=#{param2}
+		GROUP BY TO_CHAR(REGDATE,'MON')
+	</select> 
+</mapper>
+
+
+
+
+
+
+

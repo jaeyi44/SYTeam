@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.MyRouteDAO">
+	
+	<select id="getMyRoute" resultType="com.sist.web.vo.MyRoute">
+	SELECT* FROM MYROUTE WHERE MID=#{mid}
+	</select>
+	
+	<insert id="setMyRoute">
+	<selectKey keyProperty="rSeq" resultType="String" order="BEFORE">
+	SELECT NVL(MAX (TO_NUMBER (RSEQ)),0)+1 FROM MYROUTE
+	</selectKey>
+	INSERT INTO MYROUTE VALUES(#{rSeq},#{rName},#{activity},#{log},#{distance},#{mid},SYSDATE,DEFAULT)
+	</insert>
+	
+	<update id="editMyRoute">
+	UPDATE MYROUTE SET RNAME=#{param2.rName},ACTIVITY=#{param2.activity},LOG=#{param2.log},DISTANCE=#{param2.distance} WHERE RSEQ=#{param1}
+	</update>
+	
+	<delete id="delMyRoute">
+	DELETE MYROUTE WHERE RSEQ=#{rSeq}
+	</delete>
+	
+	<select id="getMyRoutes" resultType="com.sist.web.vo.MyRoute">
+	SELECT * FROM 
+    (SELECT ROWNUM AS RN, M.* FROM 
+        (SELECT * FROM MYROUTE WHERE ${param2} LIKE '%${param3}%' ORDER BY TO_NUMBER(RSEQ) DESC) M) 
+            WHERE RN BETWEEN (1+(#{param1}-1)*5) AND (1+(#{param1}-1)*5)+4
+	</select>
+	
+	<select id="mrSeqCount" resultType="Integer">
+	SELECT COUNT(RSEQ) FROM MYROUTE WHERE ${param1} LIKE '%${param2}%'
+	</select>
+	
+	<update id="hitUp">
+	UPDATE MYROUTE SET HIT=HIT+1 WHERE RSEQ=#{rSeq}
+	</update>
+	
+	<select id="getWaypoints" resultType="com.sist.web.vo.Waypoints">
+	SELECT* FROM WAYPOINTS WHERE RSEQ=#{rSeq}
+	</select>
+	
+	<select id="getRseq" resultType="String">
+	SELECT NVL(MAX (TO_NUMBER (RSEQ)),0) FROM MYROUTE
+	</select>
+	
+	<insert id="setWaypoints">
+	<selectKey keyProperty="pSeq" resultType="String" order="BEFORE">
+	SELECT NVL(MAX (TO_NUMBER (PSEQ)),0)+1 FROM WAYPOINTS
+	</selectKey>
+	INSERT INTO WAYPOINTS VALUES(#{pSeq},#{rSeq},#{pName},#{latLng})
+	</insert>
+
+	<delete id="delWaypoints">
+	DELETE WAYPOINTS WHERE RSEQ=#{rSeq}
+	</delete>
+	
+	<select id="myRouteDetail" resultType="com.sist.web.vo.MyRoute">
+	SELECT* FROM MYROUTE WHERE RSEQ=#{rSeq}
+	</select>
+
+	<insert id="setBookmark">
+	<selectKey keyProperty="bSeq" resultType="String" order="BEFORE">
+	SELECT NVL(MAX (TO_NUMBER (BSEQ)),0)+1 FROM BOOKMARK
+	</selectKey>
+	INSERT INTO BOOKMARK VALUES(#{bSeq},#{param2},#{param1},DEFAULT)
+	</insert>
+	
+	<delete id="delBookmark">
+	DELETE BOOKMARK WHERE BSEQ=#{bSeq}
+	</delete>
+	
+	<select id="getBookmark" resultType="com.sist.web.vo.Bookmark">
+	SELECT* FROM BOOKMARK WHERE BSEQ=#{bSeq}
+	</select>
+	
+	<select id="getBookmarks" resultType="com.sist.web.vo.Bookmark">
+	SELECT* FROM BOOKMARK WHERE MID=#{mid}
+	</select>
+	
+	<select id="getBseq" resultType="String">
+	SELECT BSEQ FROM BOOKMARK WHERE MID=#{param1} AND RSEQ=#{param2}
+	</select>
+	
+</mapper>

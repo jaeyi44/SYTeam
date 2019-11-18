@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.MemberDAO">
+	<select id="viewMembers" resultType="com.sist.web.vo.Member">
+		SELECT * FROM MEMBER
+	</select>
+	<select id="viewMember" resultType="com.sist.web.vo.Member">
+		SELECT * FROM MEMBER WHERE MID=#{mid}
+	</select>
+	<select id="viewMemberbyNick" resultType="com.sist.web.vo.Member">
+		SELECT * FROM MEMBER WHERE NICKNAME=#{nickname}
+	</select>
+	<insert id="addMember">
+		INSERT INTO MEMBER(MID,PWD,NICKNAME,MYLEVEL,GENDER,CONTACT,DOB,HEIGHT,WEIGHT,PURPOSE) VALUES(#{mid},#{pwd},#{nickname},'green',#{gender},#{contact},#{dob},#{height},#{weight},#{purpose})
+	</insert>
+	<update id="editMember">
+		UPDATE MEMBER SET PWD=#{pwd}, NICKNAME=#{nickname}, CONTACT=#{contact}, HEIGHT=#{height}, WEIGHT=#{weight}, PURPOSE=#{purpose}, PROFILEPIC=#{profilePic} WHERE MID=#{mid}
+	</update>
+	<delete id="delMember">
+		DELETE MEMBER WHERE MID=#{mid}
+	</delete>
+
+</mapper>
